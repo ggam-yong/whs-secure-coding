@@ -21,7 +21,7 @@ run the server process.
 ```
 cd whs-secure-coding 
 conda activate whs-secure-coding
-pip install -r requirements.txt
+pip install -r requirements.txt # 의존성
 python app.py
 ```
 
