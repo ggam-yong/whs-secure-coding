@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}상품 목록{% endblock %}
+{% block content %}
+<h2>🛍️ 상품 목록</h2>
+
+<form method="get" action="{{ url_for('product_list') }}" style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+    <input type="text" name="q" placeholder="상품명 검색" value="{{ request.args.get('q', '') }}"
+           style="padding: 6px 10px; width: 25x; border-radius: 4px; border: 1px solid #ccc;">
+    <button type="submit" style="padding: 6px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px;">
+      🔍 검색
+    </button>
+</form>
+  
+  
+
+{% if products %}
+  <div style="display: flex; flex-direction: column; gap: 15px;">
+    {% for p in products %}
+      <div style="border: 1px solid #ddd; padding: 15px; border-radius: 8px; box-shadow: 1px 1px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <a href="{{ url_for('view_product', product_id=p.id) }}" style="font-size: 18px; font-weight: bold; color: #333;">
+            {{ p.title }}
+          </a>
+          <div style="margin-top: 5px; color: #666;">
+            💰 {{ p.price }}원
+          </div>
+        </div>
+       
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>등록된 상품이 없습니다.</p>
+{% endif %}
+{% endblock %}

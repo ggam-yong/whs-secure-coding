@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}🚨 신고하기{% endblock %}
+{% block content %}
+
+<h2>🚨 신고하기</h2>
+
+<form method="post">
+  {{ form.hidden_tag() }}
+
+  <label for="target_type">신고 대상 유형:</label>
+  <select name="target_type" id="target_type" onchange="updateTargetList()" required>
+    <option value="">-- 선택 --</option>
+    <option value="user">유저</option>
+    <option value="product">상품</option>
+  </select>
+  <br><br>
+
+  <label for="target_id">신고 대상 선택:</label>
+  <select name="target_id" id="target_id" required>
+    <option value="">먼저 대상 유형을 선택해주세요</option>
+  </select>
+  <br><br>
+
+  <label for="reason">신고 사유:</label><br>
+  <textarea name="reason" rows="4" cols="50" maxlength="200" required></textarea><br><br>
+
+  <button type="submit" style="background-color: crimson; color: white; border: none; padding: 8px 16px; border-radius: 4px;">
+    🚨 신고 제출
+  </button>
+</form>
+
+<script>
+  const users = {{ users|tojson }};
+  const products = {{ products|tojson }};
+
+  function updateTargetList() {
+    const targetType = document.getElementById("target_type").value;
+    const targetSelect = document.getElementById("target_id");
+    targetSelect.innerHTML = "";
+
+    const defaultOption = document.createElement("option");
+    defaultOption.text = "-- 선택 --";
+    defaultOption.value = "";
+    targetSelect.appendChild(defaultOption);
+
+    let list = [];
+    if (targetType === "user") list = users;
+    else if (targetType === "product") list = products;
+
+    list.forEach(item => {
+      const option = document.createElement("option");
+      option.value = item.id;
+      option.text = targetType === "user" ? item.username : item.title;
+      targetSelect.appendChild(option);
+    });
+  }
+</script>
+
+{% endblock %}

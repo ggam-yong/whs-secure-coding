@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ receiver.username }}님과의 채팅{% endblock %}
+{% block content %}
+<h2>💬 {{ receiver.username }} 님과의 1:1 채팅</h2>
+
+<ul id="chat_box">
+  {% for msg in chat_history %}
+    <li>
+      <strong>{{ '나' if msg.sender_id == session['user_id'] else receiver.username }}:</strong> {{ msg.content }}
+    </li>
+  {% endfor %}
+</ul>
+
+<input type="text" id="chat_input" placeholder="메시지를 입력하세요" maxlength="200" onkeydown="if(event.key==='Enter'){sendPrivateMessage()}">
+<button onclick="sendPrivateMessage()">전송</button>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+  const socket = io();
+  const receiverId = "{{ receiver.id }}";
+  const currentUserId = "{{ session['user_id'] }}";
+
+  socket.on('connect', function() {
+    socket.emit('join_private', { room: receiverId });
+  });
+
+  socket.on('private_message', function(data) {
+    const chatBox = document.getElementById('chat_box');
+    const li = document.createElement('li');
+    const sender = (data.from === currentUserId) ? '나' : '{{ receiver.username }}';
+    li.innerHTML = `<strong>${sender}:</strong> ${data.message}`;
+    chatBox.appendChild(li);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+  function sendPrivateMessage() {
+    const input = document.getElementById('chat_input');
+    const message = input.value.trim();
+    if (message.length > 0 && message.length <= 200) {
+      socket.emit('send_private_message', {
+        to: receiverId,
+        message: message
+      });
+      input.value = '';
+    }
+  }
+</script>
+{% endblock %}

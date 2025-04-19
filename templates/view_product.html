@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}상품 상세보기{% endblock %}
+{% block content %}
+<h2>{{ product.title }}</h2>
+<p>{{ product.description }}</p>
+<p>가격: {{ product.price }}원</p>
+<p>판매자: {{ seller.username if seller else '알 수 없음' }}</p>
+
+{% if session['user_id'] == product.seller_id %}
+  <!-- 판매자 전용: 수정 / 삭제 -->
+  <form method="get" action="{{ url_for('edit_product', product_id=product.id) }}" style="display: inline;">
+    <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin-right: 10px;">
+      ✏️ 수정
+    </button>
+  </form>
+
+  <form method="post" action="{{ url_for('delete_product', product_id=product.id) }}" style="display: inline;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" onclick="return confirm('정말 삭제할까요?')" style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px;">
+      🗑️ 삭제
+    </button>
+  </form>
+
+  {% else %}
+  <!-- 구매자 전용: 포인트 송금 -->
+  <form method="get" action="{{ url_for('transfer', receiver_id=seller.id) }}" style="display: inline;">
+    <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin-right: 10px;">
+      💸 포인트 송금
+    </button>
+  </form>
+
+  <!-- 💌 1:1 문의 -->
+  <form method="get" action="{{ url_for('private_chat', receiver_id=seller.id) }}" style="display: inline;">
+    <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px;">
+      💌 1:1 문의
+    </button>
+  </form>
+{% endif %}
+
+
+
+
+{% endblock %}

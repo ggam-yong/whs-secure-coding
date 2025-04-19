@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}🛠 관리자 대시보드{% endblock %}
+{% block content %}
+<h2>🛠 관리자 대시보드</h2>
+
+<!-- ✅ 회원 관리 -->
+<h3>👤 회원 관리</h3>
+<table border="1" cellpadding="5">
+  <tr>
+    <th>사용자명</th>
+    <th>소개글</th>
+    <th>상태</th>
+    <th>기능</th>
+  </tr>
+  {% for u in users %}
+    <tr>
+      <td>{{ u.username }}</td>
+      <td>{{ u.bio or '없음' }}</td>
+      <td>{{ u.status }}</td>
+      <td>
+        {% if u.status == 'active' %}
+          <form method="post" action="{{ url_for('admin_suspend_user', user_id=u.id) }}" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">정지</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('admin_restore_user', user_id=u.id) }}" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">복구</button>
+          </form>
+        {% endif %}
+        <form method="post" action="{{ url_for('admin_clear_bio', user_id=u.id) }}" style="display:inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit">소개글 삭제</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+
+<br>
+
+<!-- ✅ 상품 관리 -->
+<h3>📦 상품 관리</h3>
+<table border="1" cellpadding="5">
+  <tr>
+    <th>상품명</th>
+    <th>설명</th>
+    <th>가격</th>
+    <th>판매자</th>
+    <th>삭제 여부</th>
+    <th>기능</th>
+  </tr>
+  {% for p in products %}
+    <tr>
+      <td>{{ p.title }}</td>
+      <td>{{ p.description }}</td>
+      <td>{{ p.price }}</td>
+      <td>{{ p.seller_username }}</td>
+      <td>{{ '삭제됨' if p.is_deleted else '정상' }}</td>
+      <td>
+        {% if not p.is_deleted %}
+          <form method="post" action="{{ url_for('delete_product_admin', product_id=p.id) }}" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">🗑️ 삭제</button>
+          </form>
+        {% else %}
+          <em>삭제 완료</em>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+
+
+<br>
+
+<!-- ✅ 신고 내역 관리 -->
+<h3>📋 신고 내역 관리</h3>
+
+{% if reports %}
+  <ul>
+    {% for report in reports %}
+      <li>
+        <strong>신고자:</strong> {{ report.reporter_name }}<br>
+        <strong>신고 대상:</strong> {{ report.target_name }} ({{ report.target_type }})<br>
+        <strong>사유:</strong> {{ report.reason }}<br>
+
+        {% if report.target_type == 'user' and report.target_status != 'suspended' %}
+          <form method="post" action="{{ url_for('admin_suspend_user', user_id=report.target_id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">🚫 유저 정지</button>
+          </form>
+        {% elif report.target_type == 'product' and report.product_deleted != 1 %}
+          <form method="post" action="{{ url_for('delete_product_admin', product_id=report.target_id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">🗑️ 상품 삭제</button>
+          </form>
+        {% else %}
+          <em>✅ 조치 완료됨</em>
+        {% endif %}
+        <hr>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>신고 내역이 없습니다.</p>
+{% endif %}
+
+{% endblock %}

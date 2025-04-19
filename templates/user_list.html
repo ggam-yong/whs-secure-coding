@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}사용자 목록{% endblock %}
+{% block content %}
+<h2 style="margin-bottom: 20px;">👥 사용자 목록</h2>
+
+{% if users %}
+  <ul style="list-style: none; padding: 0;">
+    {% for user in users %}
+      {% if user['id'] != session['user_id'] %}
+        <li style="margin-bottom: 20px; border: 1px solid #ddd; padding: 15px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <strong style="font-size: 1.1rem;">{{ user['username'] }}</strong><br>
+          <span>소개글: {{ user['bio'] or '없음' }}</span><br>
+
+          <div style="margin-top: 10px; display: flex; gap: 10px;">
+            <form method="get" action="{{ url_for('private_chat', receiver_id=user['id']) }}">
+              <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px;">
+                💌 1:1 채팅
+              </button>
+            </form>
+
+        
+          </div>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>등록된 사용자가 없습니다.</p>
+{% endif %}
+
+<p style="margin-top: 30px;"><a href="{{ url_for('dashboard') }}">← 대시보드로 돌아가기</a></p>
+{% endblock %}

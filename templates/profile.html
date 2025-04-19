@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}프로필{% endblock %}
+{% block content %}
+<h2>프로필 관리</h2>
+
+<p>사용자명: {{ user.username }}</p>
+<p>보유 포인트: {{ user.balance }}P</p>
+
+<!-- 🔵 소개글 수정 -->
+<form method="post" action="{{ url_for('profile') }}">
+  {{ bio_form.hidden_tag() }}
+  <input type="hidden" name="action" value="update_bio">
+
+  <h3>소개글 수정</h3>
+  {{ bio_form.bio(rows=4, cols=50) }}<br>
+  <button type="submit">소개글 업데이트</button>
+</form>
+
+
+<hr>
+<!-- 🟠 비밀번호 변경 -->
+<form method="post" action="{{ url_for('profile') }}">
+  {{ pw_form.hidden_tag() }}
+  <input type="hidden" name="action" value="update_password">
+
+  <h3>비밀번호 변경</h3>
+  {{ pw_form.current_password.label }}<br>
+  {{ pw_form.current_password(size=30) }}<br>
+  {{ pw_form.new_password.label }}<br>
+  {{ pw_form.new_password(size=30) }}<br>
+  {{ pw_form.confirm_password.label }}<br>
+  {{ pw_form.confirm_password(size=30) }}<br>
+
+  <button type="submit">비밀번호 변경</button>
+</form>
+<hr>
+<h3>포인트 사용 내역</h3>
+
+{% if history %}
+  <ul>
+    {% for h in history %}
+      <li>
+        {{ h.timestamp }} -
+        {% if h.sender_id == user.id %}
+          <span style="color: red;">보냄 ➜ {{ h.receiver_name }}</span> ({{ h.amount }}P)
+        {% else %}
+          <span style="color: green;">받음 ← {{ h.sender_name }}</span> (+{{ h.amount }}P)
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>포인트 사용 내역이 없습니다.</p>
+{% endif %}
+{% endblock %}

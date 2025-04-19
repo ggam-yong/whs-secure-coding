@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}대시보드{% endblock %}
+{% block content %}
+
+
+
+<h2>대시보드</h2>
+<h3>등록된 상품</h3>
+<ul>
+  {% for product in products %}
+    <li>
+      <a href="{{ url_for('view_product', product_id=product.id) }}">{{ product.title }}</a>
+      - 가격: {{ product.price }}
+    </li>
+  {% endfor %}
+</ul>
+<p><a href="{{ url_for('new_product') }}">새 상품 등록</a></p>
+<p><a href="{{ url_for('product_list') }}">상품 조회</a></p>
+<p><a href="{{ url_for('user_list') }}">사용자 조회</a></p>
+
+
+<h3>실시간 전체 채팅</h3>
+<div id="chat">
+  <ul id="messages">
+    {% for m in messages %}
+      <li>{{ m.username }}: {{ m.content }}</li>
+    {% endfor %}
+  </ul>
+  <input id="chat_input" type="text" maxlength="200" placeholder="메시지를 입력하세요 (200자 제한)">
+  <button onclick="sendMessage()">전송</button>
+</div>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script type="text/javascript">
+  var socket = io();
+
+  socket.on('connect', function() {
+    console.log("채팅 서버에 연결됨");
+  });
+
+  socket.on('message', function(data) {
+    let messages = document.getElementById('messages');
+    let item = document.createElement('li');
+    item.textContent = data.username + ": " + data.message;
+    messages.appendChild(item);
+    messages.scrollTop = messages.scrollHeight;
+  });
+
+  function sendMessage() {
+    let input = document.getElementById('chat_input');
+    let message = input.value.trim();
+    if (message.length > 0 && message.length <= 200) {
+      socket.emit('send_message', {
+        username: "{{ user.username }}",
+        message: message
+      });
+      input.value = "";
+    }
+  }
+</script>
+
+{% endblock %}

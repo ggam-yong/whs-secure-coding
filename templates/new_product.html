@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}새 상품 등록{% endblock %}
+{% block content %}
+<h2>상품 등록</h2>
+<form method="post">
+  {{ form.hidden_tag() }}  <!-- ✅ CSRF 보호 -->
+
+  제목: {{ form.title(size=40) }}<br>
+  설명: <br> {{ form.description(rows=4, cols=50) }}<br>
+  가격: {{ form.price(min=100, max=1000000) }}<br>
+
+  <button type="submit">등록하기</button>
+</form>
+{% endblock %}
