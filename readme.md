@@ -9,15 +9,19 @@ You should add some functions and complete the security requirements.
 if you don't have a miniconda(or anaconda), you can install it on this url. - https://docs.anaconda.com/free/miniconda/index.html
 
 ```
-git clone https://github.com/ugonfor/secure-coding
+git clone https://github.com/ggam-yong/whs-secure-coding.git
 conda env create -f enviroments.yaml
 ```
+
 
 ## usage
 
 run the server process.
 
 ```
+cd whs-secure-coding 
+conda activate whs-secure-coding
+pip install -r requirements.txt
 python app.py
 ```
 
