@@ -31,3 +31,7 @@ if you want to test on external machine, you can utilize the ngrok to forwarding
 sudo snap install ngrok
 ngrok http 5000
 ```
+
+## admin id/pw
+ID : admin
+pw : 123456
